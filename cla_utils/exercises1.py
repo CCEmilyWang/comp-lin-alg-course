@@ -21,7 +21,12 @@ def basic_matvec(A, x):
 
     :return b: m-dimensional numpy array
     """
-
+    m, n = A.shape
+    b = np.zeros(m)
+    for i in range(m):
+        for j in range(n):
+            b[i] += A[i,j]*x[j] 
+    return b
     raise NotImplementedError
 
 
