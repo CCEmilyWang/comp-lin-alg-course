@@ -44,6 +44,14 @@ def column_matvec(A, x):
 
     This should be implemented using a single loop over the entries of x
     """
+    m, n = A.shape
+    b = np.zeros(m)
+    
+    for i in range(n):
+        b += A[:, i] * x[i]
+    
+    return b
+
 
     raise NotImplementedError
 
@@ -97,7 +105,17 @@ def rank2(u1, u2, v1, v2):
     :param v1: n-dimensional numpy array
     :param v2: n-dimensional numpy array
     """
+    m, n = u1.shape[0], v1.shape[0]
+ 
+    A = np.zeros((m, n), dtype=np.complex128)
 
+    for i in range(m):
+        for j in range(n):
+            # A[i,j] = u1[i] * v1[j] + u2[i] * v2[j] 
+            A[i, j] = u1[i] * np.conjugate(v1[j]) + u2[i] * np.conjugate(v2[j])
+    return A
+
+ 
     raise NotImplementedError
 
     A = B.dot(C)
@@ -113,6 +131,11 @@ def rank1pert_inv(u, v):
     :param u: m-dimensional numpy array
     :param v: m-dimensional numpy array
     """
+    m = u.shape[0]
+    I = np.eye(m,dtype=np.complex128)
+    A = I - np.outer(u,v.conj())/(1+np.dot(v.conj(),u))
+    return A
+
 
     raise NotImplementedError
 
