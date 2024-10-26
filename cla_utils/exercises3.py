@@ -11,8 +11,27 @@ def householder(A):
     """
 
     m, n = A.shape
+    
+    I = np.eye(m)
+    # if m >n:
+    for i in range(n):
+        x= A[i:m,i]
+        a = np.sign(x[0])
+        a = 1 if x[0] >= 0 else -1
+        b=np.linalg.norm(x)
+        if b==0 :
+            b=1
+        Alph = a*b
+        e = np.zeros_like(x)
+        e[0]=1
+        v=x+Alph*e
+        v=v/np.linalg.norm(v)
+        A[i:m,i:n]=A[i:m,i:n]-2*np.outer(v,(np.dot(v, A[i:m,i:n])))
 
-    raise NotImplementedError
+    # R=A
+    # print (A)
+
+    return None  # 指示就地操作
 
 
 def solve_U(U, b):
@@ -26,6 +45,15 @@ def solve_U(U, b):
        the solution x_i
 
     """
+    m,m = U.shape
+    x = np.zeros(m)
+    x[m] = b[m]/U[m,m]
+    for i in range (m-1,-1,-1):
+        x[i] = b[i]
+        for j in range (i+1,m):
+           x[i]-=x[j]*U[i,j]
+        x[i]/= U[i,i]
+    return None
                      
     raise NotImplementedError
 
@@ -42,8 +70,11 @@ def householder_solve(A, b):
     :return x: an mxk-dimensional numpy array whose columns are the \
     right-hand side vectors x_1,x_2,...,x_k.
     """
+    m , n = A.shape
 
-    raise NotImplementedError
+    Ahat = np.hstack((A, b)) 
+    householder(Ahat)
+    x= solve_U(Ahat[0:m,0:n], Ahat[:m,n:])
 
     return x
 
@@ -58,10 +89,28 @@ def householder_qr(A):
     :return Q: an mxm-dimensional numpy array
     :return R: an mxn-dimensional numpy array
     """
-
-    raise NotImplementedError
-
+    m, n = A.shape
+    R = A.copy()  
+    Q = np.eye(m) 
+    
+    for i in range(n):
+       
+        x = R[i:, i]
+        
+        # Create the Householder vector
+        e = np.zeros_like(x)
+        e[0] = np.linalg.norm(x) * (1 if x[0] >= 0 else -1)
+        u = x - e
+        v = u / np.linalg.norm(u)
+        
+       
+        R[i:, :] -= 2.0 * np.outer(v, np.dot(v, R[i:, :]))
+        
+      
+        Q[:, i:] -= 2.0 * np.outer(np.dot(Q[:, i:], v), v)
+    
     return Q, R
+
 
 
 def householder_ls(A, b):
@@ -74,7 +123,9 @@ def householder_ls(A, b):
 
     :return x: an n-dimensional numpy array
     """
+    Q,R = householder_qr(A)
 
-    raise NotImplementedError
+
+    x= householder_solve(R, Q.conj().T * b)
 
     return x
