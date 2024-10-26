@@ -80,9 +80,35 @@ def GS_classical(A):
     :return R: nxn numpy array
     """
 
-    raise NotImplementedError
+    m,n = A.shape
+    Q=np.zeros(shape=[m,n],dtype=np.complex128)
+    R=np.zeros(shape=[n,n],dtype=np.complex128)
+    for i in range(n):
+        Q[:, i] = A[:, i].copy()
+        for j in range(i):
+            R[j, i] = np.vdot(Q[:, j], A[:, i])  # 使用共轭转置
+            Q[:, i] -= R[j, i] * Q[:, j]
+        
+        R[i, i] = np.linalg.norm(Q[:, i])  # 计算范数
+        if R[i, i] > 1e-10:  # 避免除以零
+        #     
+            Q[:, i] /= R[i, i]  # 归一化
+    B = np.dot(Q, R)
+    print ("Q",Q)
+    print ("R",R)
+    print ("B",B)
+    return Q,R
 
-    return R
+
+A = np.array([[1+2j, 2+3j, 3+5j],
+              [5+1j, 1+1j, 4+1j],
+              [9+2j, 7+1j, 1+2j]])
+print(GS_classical(A))
+Q,R =np.linalg.qr(A)
+print(Q@R,np.linalg.qr(A))
+
+
+
 
 def GS_modified(A):
     """
@@ -95,9 +121,24 @@ def GS_modified(A):
     :return R: nxn numpy array
     """
 
-    raise NotImplementedError
-
-    return R
+    m,n = A.shape
+    Q=np.zeros(shape=[m,n],dtype=np.complex128)
+    R=np.zeros(shape=[n,n],dtype=np.complex128)
+    for i in range(n):
+        Q[:, i] = A[:, i].copy()
+        for j in range(i):
+            R[j, i] = np.vdot(Q[:, j], Q[:, i])  # 使用共轭转置
+            Q[:, i] -= R[j, i] * Q[:, j]
+        
+        R[i, i] = np.linalg.norm(Q[:, i])  # 计算范数
+        if R[i, i] > 1e-10:  # 避免除以零
+        #     
+            Q[:, i] /= R[i, i]  # 归一化
+    B = np.dot(Q, R)
+    print ("Q",Q)
+    print ("R",R)
+    print ("B",B)
+    return Q,R
 
 
 def GS_modified_get_R(A, k):
@@ -114,7 +155,23 @@ def GS_modified_get_R(A, k):
     :return R: nxn numpy array
     """
 
-    raise NotImplementedError
+    m,n = A.shape
+    Q=np.zeros(shape=[m,n],dtype=np.complex128)
+    R=np.eye(shape=[n,n],dtype=np.complex128)
+    for i in range(k,n):
+        Q[:, i] = A[:, i].copy()
+        for j in range(i):
+            R[j, i] = np.vdot(Q[:, j], A[:, i])  # 使用共轭转置
+            Q[:, i] -= R[j, i] * Q[:, j]
+        
+        R[i, i] = np.linalg.norm(Q[:, i])  # 计算范数
+        if R[i, i] > 1e-10:  # 避免除以零
+        #     
+            Q[:, i] /= R[i, i]  # 归一化
+    B = np.dot(Q, R)
+    print ("Q",Q)
+    print ("R",R)
+    print ("B",B)
 
     return R
 
