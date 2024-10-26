@@ -78,9 +78,10 @@ def test_GS_classical(m, n):
     A = A[:, 0:n]
     A0 = 1.0*A
 
-    R = cla_utils.GS_classical(A)
+    Q,R = cla_utils.GS_classical(A)
+    err = A0 - Q@R
 
-    err = A0 - np.dot(A, R)
+    # err = A0 - np.dot(A, R)
 
     assert(cla_utils.norm(err) < 1.0e-6)
 
@@ -93,9 +94,9 @@ def test_GS_modified(m, n):
     A = A[:, 1:n]
     A0 = 1.0*A
     
-    R = cla_utils.GS_modified(A)
+    Q, R = cla_utils.GS_modified(A)
 
-    err = A0 - np.dot(A, R)
+    err = A0 - np.dot(Q, R)
 
     assert(cla_utils.norm(err) < 1.0e-6)
 
